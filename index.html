@@ -272,7 +272,7 @@ function submitForm() {
         user_email: email,
         contact: contact,
         schedule: chosenSchedule,
-        message: Hi ${name},\n\nThank you for signing up for our event!\nYour selected schedule: ${chosenSchedule}.\n\nWe look forward to seeing you!\n\n- Subic Ibaba Eco-Action Team
+        message: `Hi ${name},\n\nThank you for signing up for our event!\nYour selected schedule: ${chosenSchedule}.\n\nWe look forward to seeing you!\n\n- Subic Ibaba Eco-Action Team`
     };
 
     emailjs.send(
@@ -281,7 +281,7 @@ function submitForm() {
         templateParams,
         { publicKey: "J5C31ikXLLyhyLsdT" }
     ).then(function(response) {
-        alert(Thank you, ${name}! A confirmation email has been sent to ${email}.);
+        alert(`Thank you, ${name}! A confirmation email has been sent to ${email}.`);
         document.getElementById("name").value = "";
         document.getElementById("contact").value = "";
         document.getElementById("email").value = "";
