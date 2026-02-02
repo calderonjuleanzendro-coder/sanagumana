@@ -217,11 +217,10 @@ header {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- EMAILJS SDK -->
-<script type="text/javascript" src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
+<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
 <script type="text/javascript">
-   (function(){
-      emailjs.init("J5C31ikXLLyhyLsdT"); // Your EmailJS User ID
-   })();
+   // Initialize EmailJS
+   emailjs.init("J5C31ikXLLyhyLsdT"); // Your EmailJS Public Key
 </script>
 
 <script>
@@ -276,7 +275,6 @@ function submitForm() {
         return;
     }
 
-    // Format the message
     const message = `
 Hello ${userName},
 
@@ -292,10 +290,9 @@ Best regards,
 Subic Ibaba Eco-Action Team
 `;
 
-    // Template parameters
     const templateParams = {
         to_name: userName,
-        to_email: userEmail, // Must match {{to_email}} in your EmailJS template
+        to_email: userEmail,
         message: message
     };
 
@@ -314,4 +311,3 @@ Subic Ibaba Eco-Action Team
 
 </body>
 </html>
-
