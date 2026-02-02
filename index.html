@@ -172,16 +172,16 @@ header {
     <div id="schedulePanel">
         <div class="sign">📅 CLICKABLE SCHEDULE</div>
 
-        <div class="scheduleBtn green" onclick="openForm('Jan. 18, Feb. 18, and March 18 - Cleanup')">
-            Jan. 18, Feb. 18, and March 18 - Cleanup <span>CLICK</span>
+        <div class="scheduleBtn green" onclick="openForm('Jan. 18, Feb. 18, March 18 - Cleanup')">
+            Jan. 18, Feb. 18, March 18 - Cleanup <span>CLICK</span>
         </div>
 
-        <div class="scheduleBtn blue" onclick="openForm('Apr. 18, May 18, and June 18 - Cleanup')">
-            Apr. 18, May 18, and June 18 - Cleanup <span>CLICK</span>
+        <div class="scheduleBtn blue" onclick="openForm('Apr. 18, May 18, June 18 - Cleanup')">
+            Apr. 18, May 18, June 18 - Cleanup <span>CLICK</span>
         </div>
 
-        <div class="scheduleBtn orange" onclick="openForm('July 18, Aug. 18, and Sept. 18 - Cleanup')">
-            July 18, Aug. 18, and Sept. 18 - Cleanup <span>CLICK</span>
+        <div class="scheduleBtn orange" onclick="openForm('July 18, Aug. 18, Sept. 18 - Cleanup')">
+            July 18, Aug. 18, Sept. 18 - Cleanup <span>CLICK</span>
         </div>
 
         <div class="scheduleBtn teal" onclick="openForm('October 18 - Cleanup')">
@@ -217,10 +217,10 @@ header {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- EMAILJS SDK -->
-<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script type="text/javascript">
-   // Initialize EmailJS
-   emailjs.init("J5C31ikXLLyhyLsdT"); // Your EmailJS Public Key
+<script type="text/javascript" src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
+<script>
+   // Initialize EmailJS with your User ID
+   emailjs.init("J5C31ikXLLyhyLsdT");
 </script>
 
 <script>
@@ -228,25 +228,26 @@ header {
 const map = L.map('map').setView([13.9462608,120.94088389], 15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-L.polygon([[13.94965871,120.9408106],[13.94969433,120.94081056],[13.94973678,120.94102123],[13.9497206,120.94101883]],
-{ color:'red', fillColor:'#f56565', fillOpacity:0.6 }).addTo(map).bindPopup("Needs Cleaning");
+// Add polygons
+const polygons = [
+    [[13.94965871,120.9408106],[13.94969433,120.94081056],[13.94973678,120.94102123],[13.9497206,120.94101883]],
+    [[13.95019297,120.93941406],[13.95023971,120.93943898],[13.95015354,120.93954712],[13.950148107,120.93954624]],
+    [[13.9501333,120.93956394],[13.95015034,120.93955586],[13.95008737,120.9400602],[13.95007683,120.94006699]],
+    [[13.94760165,120.94475761],[13.94760053,120.94474366],[13.94826218,120.94444513],[13.94827686,120.94449015]]
+];
 
-L.polygon([[13.95019297,120.93941406],[13.95023971,120.93943898],[13.95015354,120.93954712],[13.950148107,120.93954624]],
-{ color:'red', fillColor:'#f56565', fillOpacity:0.6 }).addTo(map).bindPopup("Needs Cleaning");
-
-L.polygon([[13.9501333,120.93956394],[13.95015034,120.93955586],[13.95008737,120.9400602],[13.95007683,120.94006699]],
-{ color:'red', fillColor:'#f56565', fillOpacity:0.6 }).addTo(map).bindPopup("Needs Cleaning");
-
-L.polygon([[13.94760165,120.94475761],[13.94760053,120.94474366],[13.94826218,120.94444513],[13.94827686,120.94449015]],
-{ color:'red', fillColor:'#f56565', fillOpacity:0.6 }).addTo(map).bindPopup("Needs Cleaning");
+polygons.forEach(coords => {
+    L.polygon(coords, { color:'red', fillColor:'#f56565', fillOpacity:0.6 })
+     .addTo(map)
+     .bindPopup("Needs Cleaning");
+});
 
 /* ===== MODAL LOGIC ===== */
 let chosenSchedule = "";
 
 function openForm(schedule) {
     chosenSchedule = schedule;
-    document.getElementById("selectedSchedule").innerText =
-        "Selected: " + schedule;
+    document.getElementById("selectedSchedule").innerText = "Selected: " + schedule;
     document.getElementById("modal").style.display = "flex";
     map.dragging.disable();
     map.scrollWheelZoom.disable();
@@ -258,54 +259,52 @@ function closeForm() {
     map.scrollWheelZoom.enable();
 }
 
-/* ===== FORM SUBMISSION WITH EMAILJS ===== */
-function submitForm() {
-    const userName = document.getElementById("name").value.trim();
-    const userContact = document.getElementById("contact").value.trim();
-    const userEmail = document.getElementById("email").value.trim();
+/* ===== FORM SUBMISSION ===== */
+async function submitForm() {
+    const name = document.getElementById("name").value.trim();
+    const contact = document.getElementById("contact").value.trim();
+    const email = document.getElementById("email").value.trim();
     const confirmEmail = document.getElementById("confirmEmail").value.trim();
 
-    if (!userName || !userContact || !userEmail) {
+    if (!name || !contact || !email) {
         alert("Please fill out all fields.");
         return;
     }
-
-    if (userEmail !== confirmEmail) {
-        alert("Email and Confirm Email do not match. Please check.");
+    if (email !== confirmEmail) {
+        alert("Email and Confirm Email do not match.");
         return;
     }
 
     const message = `
-Hello ${userName},
+Hello ${name},
 
 Thank you for signing up for Subic Ibaba Eco-Action!
 
-Event Details:
 Schedule: ${chosenSchedule}
-Contact: ${userContact}
+Contact: ${contact}
 
-We look forward to seeing you at the event!
+We look forward to seeing you!
 
 Best regards,
 Subic Ibaba Eco-Action Team
 `;
 
     const templateParams = {
-        to_name: userName,
-        to_email: userEmail,
+        to_name: name,
+        to_email: email,
         message: message
     };
 
-    emailjs.send("service_yhv7tg9", "template_8jpvutf", templateParams)
-        .then(function(response) {
-            console.log('SUCCESS!', response.status, response.text);
-            alert("Thank you for signing up! A confirmation email has been sent to " + userEmail);
-            closeForm();
-        }, function(error) {
-            console.log('FAILED...', error);
-            alert("Sign-up successful, but the confirmation email could not be sent. Please check your email address.");
-            closeForm();
-        });
+    try {
+        const response = await emailjs.send("service_yhv7tg9", "template_8jpvutf", templateParams);
+        console.log("SUCCESS", response.status, response.text);
+        alert("Thank you for signing up! A confirmation email has been sent to " + email);
+        closeForm();
+    } catch (error) {
+        console.error("EmailJS error:", error);
+        alert("Sign-up successful, but the confirmation email could not be sent. Please check your email address.");
+        closeForm();
+    }
 }
 </script>
 
