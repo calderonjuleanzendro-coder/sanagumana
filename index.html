@@ -209,10 +209,10 @@ header {
 <!-- LEAFLET MAP -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- EMAILJS SDK -->
-<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script type="text/javascript">
-emailjs.init("J5C31ikXLLyhyLsdT"); // Your EmailJS User ID
+<!-- EMAILJS V4 SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init({ publicKey: "J5C31ikXLLyhyLsdT" }); // Your EmailJS public key
 </script>
 
 <script>
@@ -222,7 +222,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Polygons with all coordinates
+// Polygons
 const polygons = [
   {coords:[[13.94965871,120.9408106],[13.94969433,120.94081056],[13.94973678,120.94102123],[13.9497206,120.94101883]], popup:"Needs Cleaning"},
   {coords:[[13.95019297,120.93941406],[13.95023971,120.93943898],[13.95015354,120.93954712],[13.950148107,120.93954624]], popup:"Needs Cleaning"},
@@ -254,7 +254,7 @@ function closeForm() {
     map.scrollWheelZoom.enable();
 }
 
-/* ===== FORM SUBMISSION WITH EMAILJS ===== */
+/* ===== FORM SUBMISSION WITH EMAILJS v4 ===== */
 function submitForm() {
     const name = document.getElementById("name").value.trim();
     const contact = document.getElementById("contact").value.trim();
@@ -265,7 +265,6 @@ function submitForm() {
         alert("Please fill out all fields.");
         return;
     }
-
     if (email !== confirmEmail) {
         alert("Email and Confirm Email do not match.");
         return;
@@ -276,11 +275,15 @@ function submitForm() {
         user_email: email,
         contact: contact,
         schedule: chosenSchedule,
-        from_email: "calderonjuleanzendro@gmail.com" // your "from" email
+        from_email: "calderonjuleanzendro@gmail.com"
     };
 
-    emailjs.send("service_yhv7tg9", "template_8jpvutf", templateParams)
-    .then(function(response) {
+    emailjs.send(
+        "service_yhv7tg9",
+        "template_8jpvutf",
+        templateParams,
+        { publicKey: "J5C31ikXLLyhyLsdT" }
+    ).then(function(response) {
         alert("Thank you for signing up! A confirmation email has been sent to " + email);
         closeForm();
     }, function(error) {
