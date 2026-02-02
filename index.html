@@ -218,9 +218,9 @@ header {
 
 <!-- EMAILJS SDK -->
 <script type="text/javascript" src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
-<script>
-   // Initialize EmailJS with your User ID
-   emailjs.init("J5C31ikXLLyhyLsdT");
+<script type="text/javascript">
+  // Initialize EmailJS with your user ID
+  emailjs.init("J5C31ikXLLyhyLsdT");
 </script>
 
 <script>
@@ -228,18 +228,16 @@ header {
 const map = L.map('map').setView([13.9462608,120.94088389], 15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-// Add polygons
+// Add your polygons
 const polygons = [
-    [[13.94965871,120.9408106],[13.94969433,120.94081056],[13.94973678,120.94102123],[13.9497206,120.94101883]],
-    [[13.95019297,120.93941406],[13.95023971,120.93943898],[13.95015354,120.93954712],[13.950148107,120.93954624]],
-    [[13.9501333,120.93956394],[13.95015034,120.93955586],[13.95008737,120.9400602],[13.95007683,120.94006699]],
-    [[13.94760165,120.94475761],[13.94760053,120.94474366],[13.94826218,120.94444513],[13.94827686,120.94449015]]
+  {coords:[[13.94965871,120.9408106],[13.94969433,120.94081056],[13.94973678,120.94102123],[13.9497206,120.94101883]], popup:"Needs Cleaning"},
+  {coords:[[13.95019297,120.93941406],[13.95023971,120.93943898],[13.95015354,120.93954712],[13.950148107,120.93954624]], popup:"Needs Cleaning"},
+  {coords:[[13.9501333,120.93956394],[13.95015034,120.93955586],[13.95008737,120.9400602],[13.95007683,120.94006699]], popup:"Needs Cleaning"},
+  {coords:[[13.94760165,120.94475761],[13.94760053,120.94474366],[13.94826218,120.94444513],[13.94827686,120.94449015]], popup:"Needs Cleaning"}
 ];
 
-polygons.forEach(coords => {
-    L.polygon(coords, { color:'red', fillColor:'#f56565', fillOpacity:0.6 })
-     .addTo(map)
-     .bindPopup("Needs Cleaning");
+polygons.forEach(p => {
+  L.polygon(p.coords, {color:'red', fillColor:'#f56565', fillOpacity:0.6}).addTo(map).bindPopup(p.popup);
 });
 
 /* ===== MODAL LOGIC ===== */
@@ -259,8 +257,8 @@ function closeForm() {
     map.scrollWheelZoom.enable();
 }
 
-/* ===== FORM SUBMISSION ===== */
-async function submitForm() {
+/* ===== FORM SUBMISSION WITH EMAILJS ===== */
+function submitForm() {
     const name = document.getElementById("name").value.trim();
     const contact = document.getElementById("contact").value.trim();
     const email = document.getElementById("email").value.trim();
@@ -270,41 +268,30 @@ async function submitForm() {
         alert("Please fill out all fields.");
         return;
     }
+
     if (email !== confirmEmail) {
-        alert("Email and Confirm Email do not match.");
+        alert("Email and Confirm Email do not match. Please check.");
         return;
     }
 
-    const message = `
-Hello ${name},
-
-Thank you for signing up for Subic Ibaba Eco-Action!
-
-Schedule: ${chosenSchedule}
-Contact: ${contact}
-
-We look forward to seeing you!
-
-Best regards,
-Subic Ibaba Eco-Action Team
-`;
-
+    // Template params must match your EmailJS template variables
     const templateParams = {
-        to_name: name,
-        to_email: email,
-        message: message
+        user_name: name,
+        user_email: email,
+        schedule: chosenSchedule,
+        contact: contact
     };
 
-    try {
-        const response = await emailjs.send("service_yhv7tg9", "template_8jpvutf", templateParams);
-        console.log("SUCCESS", response.status, response.text);
+    emailjs.send("service_yhv7tg9", "template_8jpvutf", templateParams)
+    .then(function(response) {
+        console.log('SUCCESS!', response.status, response.text);
         alert("Thank you for signing up! A confirmation email has been sent to " + email);
         closeForm();
-    } catch (error) {
-        console.error("EmailJS error:", error);
-        alert("Sign-up successful, but the confirmation email could not be sent. Please check your email address.");
+    }, function(error) {
+        console.log('FAILED...', error);
+        alert("Sign-up successful, but the confirmation email could not be sent. Please check your email or try again.");
         closeForm();
-    }
+    });
 }
 </script>
 
