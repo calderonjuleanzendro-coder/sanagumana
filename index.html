@@ -64,9 +64,7 @@ header {
     border: 4px solid #5a4028;
 }
 
-.leaflet-container {
-    z-index: 1 !important;
-}
+.leaflet-container { z-index: 1 !important; }
 
 /* ===== SCHEDULE PANEL ===== */
 #schedulePanel {
@@ -123,6 +121,10 @@ header {
     text-align: center;
 }
 
+#modalBox h3 {
+    margin-top: 0;
+}
+
 #modalBox input {
     width: 100%;
     padding: 8px;
@@ -168,23 +170,18 @@ header {
         <div class="scheduleBtn green" onclick="openForm('Jan. 18, Feb. 18, March 18 - Cleanup')">
             Jan. 18, Feb. 18, March 18 - Cleanup <span>CLICK</span>
         </div>
-
         <div class="scheduleBtn blue" onclick="openForm('Apr. 18, May 18, June 18 - Cleanup')">
             Apr. 18, May 18, June 18 - Cleanup <span>CLICK</span>
         </div>
-
         <div class="scheduleBtn orange" onclick="openForm('July 18, Aug. 18, Sept. 18 - Cleanup')">
             July 18, Aug. 18, Sept. 18 - Cleanup <span>CLICK</span>
         </div>
-
         <div class="scheduleBtn teal" onclick="openForm('October 18 - Cleanup')">
             October 18 - Cleanup <span>CLICK</span>
         </div>
-
         <div class="scheduleBtn yellow" onclick="openForm('November 18 - Cleanup')">
             November 18 - Cleanup <span>CLICK</span>
         </div>
-
         <div class="scheduleBtn red" onclick="openForm('December 18 - Campfire Gathering')">
             December 18 - Campfire Gathering <span>CLICK</span>
         </div>
@@ -212,7 +209,7 @@ header {
 <!-- EMAILJS V4 SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  emailjs.init({ publicKey: "J5C31ikXLLyhyLsdT" }); // Your EmailJS public key
+  emailjs.init({ publicKey: "J5C31ikXLLyhyLsdT" }); // Replace with your EmailJS public key
 </script>
 
 <script>
@@ -254,7 +251,7 @@ function closeForm() {
     map.scrollWheelZoom.enable();
 }
 
-/* ===== FORM SUBMISSION WITH EMAILJS v4 ===== */
+/* ===== EMAILJS FORM SUBMISSION ===== */
 function submitForm() {
     const name = document.getElementById("name").value.trim();
     const contact = document.getElementById("contact").value.trim();
@@ -275,19 +272,24 @@ function submitForm() {
         user_email: email,
         contact: contact,
         schedule: chosenSchedule,
-        from_email: "calderonjuleanzendro@gmail.com"
+        message: Hi ${name},\n\nThank you for signing up for our event!\nYour selected schedule: ${chosenSchedule}.\n\nWe look forward to seeing you at the event!\n\n- Subic Ibaba Eco-Action Team
     };
 
     emailjs.send(
-        "service_yhv7tg9",
-        "template_8jpvutf",
+        "service_yhv7tg9",     // Replace with your EmailJS service ID
+        "template_8jpvutf",    // Replace with your EmailJS template ID
         templateParams,
         { publicKey: "J5C31ikXLLyhyLsdT" }
     ).then(function(response) {
-        alert("Thank you for signing up! A confirmation email has been sent to " + email);
+        alert(Thank you, ${name}! A confirmation email has been sent to ${email}.);
+        // Clear form
+        document.getElementById("name").value = "";
+        document.getElementById("contact").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("confirmEmail").value = "";
         closeForm();
     }, function(error) {
-        alert("Sign-up successful, but the confirmation email could not be sent. Please check your email or try again.");
+        alert("Sign-up successful, but the confirmation email could not be sent. Please try again.");
         closeForm();
     });
 }
